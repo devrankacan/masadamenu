@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MasadaMenu - Dijital QR Menü Sistemi</title>
+    <meta name="description" content="Restoranınız için QR kod ile dijital menü. WhatsApp üzerinden anlık sipariş alın.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+        body { font-family: 'Inter', sans-serif; color: #1a1a1a; background: #fff; line-height: 1.6; }
+
+        /* Nav */
+        nav { position: fixed; top: 0; width: 100%; z-index: 100; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); border-bottom: 1px solid #f0f0f0; }
+        .nav-inner { max-width: 1200px; margin: 0 auto; padding: 0 24px; height: 64px; display: flex; align-items: center; justify-content: space-between; }
+        .logo { font-size: 20px; font-weight: 700; color: #1a1a1a; text-decoration: none; }
+        .logo span { color: #16a34a; }
+        .nav-cta { background: #16a34a; color: white; padding: 8px 20px; border-radius: 8px; text-decoration: none; font-size: 14px; font-weight: 600; transition: background 0.2s; }
+        .nav-cta:hover { background: #15803d; }
+
+        /* Hero */
+        .hero { min-height: 100vh; display: flex; align-items: center; padding: 100px 24px 80px; background: linear-gradient(135deg, #f0fdf4 0%, #fff 60%); }
+        .hero-inner { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; }
+        .hero-badge { display: inline-flex; align-items: center; gap: 8px; background: #dcfce7; color: #16a34a; padding: 6px 14px; border-radius: 100px; font-size: 13px; font-weight: 500; margin-bottom: 24px; }
+        .hero-badge::before { content: ''; width: 6px; height: 6px; background: #16a34a; border-radius: 50%; animation: pulse 2s infinite; }
+        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+        .hero h1 { font-size: clamp(34px, 5vw, 54px); font-weight: 800; line-height: 1.15; color: #0f172a; margin-bottom: 20px; }
+        .hero h1 span { color: #16a34a; }
+        .hero p { font-size: 18px; color: #64748b; margin-bottom: 36px; max-width: 480px; }
+        .hero-buttons { display: flex; gap: 16px; flex-wrap: wrap; }
+        .btn-wa { display: inline-flex; align-items: center; gap: 10px; background: #25d366; color: white; padding: 14px 28px; border-radius: 12px; font-size: 16px; font-weight: 700; text-decoration: none; transition: all 0.2s; box-shadow: 0 4px 20px rgba(37,211,102,0.35); }
+        .btn-wa:hover { background: #22c55e; transform: translateY(-2px); box-shadow: 0 8px 28px rgba(37,211,102,0.45); }
+        .btn-outline { display: inline-flex; align-items: center; gap: 8px; background: white; color: #1a1a1a; padding: 14px 28px; border-radius: 12px; font-size: 16px; font-weight: 600; text-decoration: none; border: 1.5px solid #e2e8f0; transition: all 0.2s; }
+        .btn-outline:hover { border-color: #16a34a; color: #16a34a; }
+
+        /* Phone mockup */
+        .hero-visual { display: flex; justify-content: center; }
+        .phone { width: 260px; height: 520px; background: #0f172a; border-radius: 44px; padding: 14px; box-shadow: 0 40px 80px rgba(0,0,0,0.25), 0 0 0 1px rgba(255,255,255,0.05); }
+        .phone-screen { width: 100%; height: 100%; background: #fff; border-radius: 34px; overflow: hidden; display: flex; flex-direction: column; }
+        .phone-bar { height: 36px; background: #0f172a; border-radius: 34px 34px 0 0; display: flex; align-items: center; justify-content: center; }
+        .phone-notch { width: 80px; height: 20px; background: #0f172a; border-radius: 0 0 14px 14px; position: relative; top: -18px; }
+        .phone-header { background: #16a34a; padding: 14px 16px; color: white; }
+        .phone-header-name { font-size: 14px; font-weight: 700; }
+        .phone-header-sub { font-size: 11px; opacity: 0.75; margin-top: 2px; }
+        .phone-body { flex: 1; padding: 16px; display: flex; flex-direction: column; gap: 10px; }
+        .menu-item { background: #f8fafc; border-radius: 10px; padding: 10px 12px; display: flex; justify-content: space-between; align-items: center; }
+        .menu-item-name { font-size: 12px; font-weight: 600; color: #1a1a1a; }
+        .menu-item-price { font-size: 12px; font-weight: 700; color: #16a34a; }
+        .phone-footer { padding: 12px 16px; border-top: 1px solid #f1f5f9; }
+        .phone-wa-btn { width: 100%; background: #25d366; color: white; border: none; padding: 11px; border-radius: 10px; font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer; }
+
+        /* Stats */
+        .stats { background: #0f172a; padding: 64px 24px; }
+        .stats-inner { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; text-align: center; }
+        .stat-number { font-size: 48px; font-weight: 800; color: #16a34a; line-height: 1; }
+        .stat-label { font-size: 15px; color: #94a3b8; margin-top: 8px; }
+
+        /* Features */
+        .features { padding: 100px 24px; }
+        .section-header { text-align: center; margin-bottom: 60px; }
+        .section-tag { display: inline-block; background: #f0fdf4; color: #16a34a; padding: 6px 16px; border-radius: 100px; font-size: 13px; font-weight: 600; margin-bottom: 16px; }
+        .section-title { font-size: clamp(28px, 4vw, 40px); font-weight: 800; color: #0f172a; margin-bottom: 14px; }
+        .section-desc { font-size: 17px; color: #64748b; max-width: 520px; margin: 0 auto; }
+        .features-grid { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; }
+        .feature-card { padding: 32px; border-radius: 20px; border: 1.5px solid #f1f5f9; transition: all 0.3s; }
+        .feature-card:hover { border-color: #bbf7d0; box-shadow: 0 8px 32px rgba(22,163,74,0.08); transform: translateY(-4px); }
+        .feature-icon { width: 52px; height: 52px; background: #f0fdf4; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 26px; margin-bottom: 20px; }
+        .feature-title { font-size: 17px; font-weight: 700; color: #0f172a; margin-bottom: 10px; }
+        .feature-desc { font-size: 15px; color: #64748b; line-height: 1.7; }
+
+        /* How */
+        .how { padding: 100px 24px; background: #f8fafc; }
+        .steps { max-width: 900px; margin: 0 auto; display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; position: relative; }
+        .steps::before { content: ''; position: absolute; top: 35px; left: calc(16.6% + 36px); right: calc(16.6% + 36px); height: 2px; background: #bbf7d0; }
+        .step { text-align: center; position: relative; z-index: 1; }
+        .step-num { width: 72px; height: 72px; background: white; border: 3px solid #16a34a; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 26px; font-weight: 800; color: #16a34a; margin: 0 auto 24px; box-shadow: 0 0 0 8px #f0fdf4; }
+        .step-title { font-size: 17px; font-weight: 700; color: #0f172a; margin-bottom: 8px; }
+        .step-desc { font-size: 14px; color: #64748b; line-height: 1.65; }
+
+        /* CTA */
+        .cta { padding: 100px 24px; background: linear-gradient(135deg, #0f172a 0%, #14532d 100%); text-align: center; }
+        .cta h2 { font-size: clamp(28px, 4vw, 42px); font-weight: 800; color: white; margin-bottom: 16px; }
+        .cta p { font-size: 18px; color: #94a3b8; margin-bottom: 40px; }
+        .btn-wa-lg { display: inline-flex; align-items: center; gap: 12px; background: #25d366; color: white; padding: 18px 40px; border-radius: 14px; font-size: 18px; font-weight: 700; text-decoration: none; transition: all 0.2s; box-shadow: 0 6px 30px rgba(37,211,102,0.35); }
+        .btn-wa-lg:hover { background: #22c55e; transform: translateY(-2px); box-shadow: 0 10px 40px rgba(37,211,102,0.45); }
+        .cta-phone { margin-top: 24px; color: #475569; font-size: 15px; }
+        .cta-phone a { color: #94a3b8; text-decoration: none; }
+        .cta-phone a:hover { color: #16a34a; }
+
+        /* Footer */
+        footer { background: #020617; padding: 32px 24px; text-align: center; border-top: 1px solid rgba(255,255,255,0.05); }
+        footer p { color: #334155; font-size: 14px; }
+        footer span { color: #16a34a; }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero-inner { grid-template-columns: 1fr; }
+            .hero-visual { display: none; }
+            .features-grid { grid-template-columns: 1fr; }
+            .steps { grid-template-columns: 1fr; gap: 32px; }
+            .steps::before { display: none; }
+            .stats-inner { grid-template-columns: 1fr; gap: 28px; }
+            .hero-buttons { flex-direction: column; }
+            .btn-wa, .btn-outline { justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Nav -->
+<nav>
+    <div class="nav-inner">
+        <a href="#" class="logo">masada<span>menu</span></a>
+        <a href="https://wa.me/905335620161" class="nav-cta" target="_blank" rel="noopener">WhatsApp ile Başla</a>
+    </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+    <div class="hero-inner">
+        <div>
+            <div class="hero-badge">QR Menü + WhatsApp Sistemi</div>
+            <h1>Menünüz Artık <span>Dijital</span> ve Akıllı</h1>
+            <p>Restoranınıza özel QR kod ile müşterileriniz menüye anında erişir, WhatsApp üzerinden sipariş verir. Uygulama yok, kargaşa yok.</p>
+            <div class="hero-buttons">
+                <a href="https://wa.me/905335620161" class="btn-wa" target="_blank" rel="noopener">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.122.554 4.112 1.523 5.845L.057 23.714l5.991-1.447A11.945 11.945 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.893 0-3.668-.522-5.184-1.432l-.372-.22-3.554.858.892-3.455-.242-.386A9.944 9.944 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>
+                    Hemen Başla
+                </a>
+                <a href="#nasil-calisir" class="btn-outline">Nasıl Çalışır? →</a>
+            </div>
+        </div>
+        <div class="hero-visual">
+            <div class="phone">
+                <div class="phone-screen">
+                    <div class="phone-bar">
+                        <div class="phone-notch"></div>
+                    </div>
+                    <div class="phone-header">
+                        <div class="phone-header-name">🍽️ Cafe Menüsü</div>
+                        <div class="phone-header-sub">masadamenu.com.tr · QR ile açıldı</div>
+                    </div>
+                    <div class="phone-body">
+                        <div style="font-size:11px;font-weight:600;color:#94a3b8;letter-spacing:.05em;margin-bottom:4px;">KAHVALTI</div>
+                        <div class="menu-item"><span class="menu-item-name">Serpme Kahvaltı</span><span class="menu-item-price">₺280</span></div>
+                        <div class="menu-item"><span class="menu-item-name">Menemen</span><span class="menu-item-price">₺120</span></div>
+                        <div style="font-size:11px;font-weight:600;color:#94a3b8;letter-spacing:.05em;margin:4px 0;">İÇECEKLER</div>
+                        <div class="menu-item"><span class="menu-item-name">Türk Kahvesi</span><span class="menu-item-price">₺65</span></div>
+                        <div class="menu-item"><span class="menu-item-name">Çay</span><span class="menu-item-price">₺30</span></div>
+                    </div>
+                    <div class="phone-footer">
+                        <button class="phone-wa-btn">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.122.554 4.112 1.523 5.845L.057 23.714l5.991-1.447A11.945 11.945 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.893 0-3.668-.522-5.184-1.432l-.372-.22-3.554.858.892-3.455-.242-.386A9.944 9.944 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>
+                            WhatsApp'tan Sipariş Ver
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Stats -->
+<section class="stats">
+    <div class="stats-inner">
+        <div>
+            <div class="stat-number">2 dk</div>
+            <div class="stat-label">Kurulum Süresi</div>
+        </div>
+        <div>
+            <div class="stat-number">0</div>
+            <div class="stat-label">Uygulama İndirme</div>
+        </div>
+        <div>
+            <div class="stat-number">7/24</div>
+            <div class="stat-label">Erişilebilir Menü</div>
+        </div>
+    </div>
+</section>
+
+<!-- Features -->
+<section class="features" id="ozellikler">
+    <div class="section-header">
+        <div class="section-tag">Özellikler</div>
+        <h2 class="section-title">Neden MasadaMenu?</h2>
+        <p class="section-desc">Restoranınızı dijitalleştirmenin en hızlı ve en kolay yolu.</p>
+    </div>
+    <div class="features-grid">
+        <div class="feature-card">
+            <div class="feature-icon">📱</div>
+            <div class="feature-title">QR Kod ile Anlık Erişim</div>
+            <div class="feature-desc">Masalara yerleştirilen QR kodlarla müşteriler uygulama indirmeden menüye saniyeler içinde ulaşır.</div>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">💬</div>
+            <div class="feature-title">WhatsApp ile Sipariş</div>
+            <div class="feature-desc">Müşteri seçimini yapar ve doğrudan WhatsApp'a yönlendirilir. Siparişler anında elinizde olur.</div>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">✏️</div>
+            <div class="feature-title">Anlık Menü Güncelleme</div>
+            <div class="feature-desc">Fiyat değişikliği, yeni ürün ekleme — her şey anında güncellenir. Baskı masrafı sıfır.</div>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">🌐</div>
+            <div class="feature-title">Uygulama Gerektirmez</div>
+            <div class="feature-desc">Müşterilerinizin herhangi bir uygulama indirmesine gerek yok. Tarayıcıda anında açılır.</div>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">⚡</div>
+            <div class="feature-title">Hızlı Kurulum</div>
+            <div class="feature-desc">2 dakikada sisteminizi kurun. QR kodlarınızı yazdırın, masalara koyun, hazırsınız.</div>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">💰</div>
+            <div class="feature-title">Uygun Fiyat</div>
+            <div class="feature-desc">Pahalı yazılım lisansları yok. Küçük işletmeler için tasarlanmış, bütçe dostu çözüm.</div>
+        </div>
+    </div>
+</section>
+
+<!-- How it works -->
+<section class="how" id="nasil-calisir">
+    <div class="section-header">
+        <div class="section-tag">Nasıl Çalışır</div>
+        <h2 class="section-title">3 Adımda Dijital Menü</h2>
+        <p class="section-desc">Kurulum ve kullanım son derece basit. Teknik bilgi gerekmez.</p>
+    </div>
+    <div class="steps">
+        <div class="step">
+            <div class="step-num">1</div>
+            <div class="step-title">QR Kodu Masaya Koyun</div>
+            <div class="step-desc">Size özel hazırlanan QR kodunuzu yazdırıp masanıza yerleştirin.</div>
+        </div>
+        <div class="step">
+            <div class="step-num">2</div>
+            <div class="step-title">Müşteri Menüyü Görsün</div>
+            <div class="step-desc">Telefon kamerasıyla QR kodu okutan müşteri dijital menüye anında erişir.</div>
+        </div>
+        <div class="step">
+            <div class="step-num">3</div>
+            <div class="step-title">WhatsApp'tan Sipariş</div>
+            <div class="step-desc">Seçilen ürünler WhatsApp mesajı olarak size iletilir. Sipariş hazır.</div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA -->
+<section class="cta">
+    <h2>Hemen Başlayalım</h2>
+    <p>Restoranınız için dijital menü sistemi kurmak sadece birkaç dakika sürer.</p>
+    <a href="https://wa.me/905335620161?text=Merhaba%2C%20MasadaMenu%20hakk%C4%B1nda%20bilgi%20almak%20istiyorum." class="btn-wa-lg" target="_blank" rel="noopener">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.122.554 4.112 1.523 5.845L.057 23.714l5.991-1.447A11.945 11.945 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.893 0-3.668-.522-5.184-1.432l-.372-.22-3.554.858.892-3.455-.242-.386A9.944 9.944 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>
+        WhatsApp ile İletişime Geçin
+    </a>
+    <div class="cta-phone">veya arayın: <a href="tel:+905335620161">+90 533 562 01 61</a></div>
+</section>
+
+<!-- Footer -->
+<footer>
+    <p>© 2025 <span>MasadaMenu</span> · Tüm hakları saklıdır.</p>
+</footer>
+
+</body>
+</html>
